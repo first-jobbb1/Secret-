@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071426">
+  <title>Секретное письмо</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: radial-gradient(
+        ellipse at center,
+        #102541 0%,
+        #09182d 48%,
+        #050e1d 100%
+      );
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .scene {
+      position: relative;
+      width: min(340px, 88vw);
+      height: 350px;
+      cursor: pointer;
+      perspective: 1000px;
+      user-select: none;
+      outline: none;
+    }
+
+    .envelope {
+      position: absolute;
+      left: 0;
+      bottom: 35px;
+      width: 100%;
+      height: 200px;
+      isolation: isolate;
+      filter: drop-shadow(0 22px 28px #0008);
+    }
+
+    .back {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: 3px;
+      background: linear-gradient(145deg, #e1d2b9, #c7b394 58%, #b6a183);
+    }
+
+    /* Лист полностью скрыт внутри конверта до нажатия */
+    .paper-window {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+
+    .paper {
+      position: absolute;
+      left: 7%;
+      bottom: 0;
+      width: 86%;
+      height: 245px;
+      padding-top: 19px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 17px;
+      color: #243750;
+      background: linear-gradient(110deg, #fbf8ef, #eee8dc 70%, #e5dece);
+      border: 1px solid #d8cfbf;
+      box-shadow: 0 2px 12px #0002;
+      transform: translateY(0);
+      transition: transform 1s cubic-bezier(.2, .75, .2, 1);
+    }
+
+    .paper h1 {
+      margin: 0;
+      font: 600 27px Georgia, serif;
+      letter-spacing: 5px;
+    }
+
+    .wheel {
+      position: relative;
+      width: 116px;
+      height: 116px;
+      flex: 0 0 auto;
+      border: 5px solid #b99a62;
+      border-radius: 50%;
+      background: conic-gradient(
+        #9d344b 0deg 45deg,
+        #e5c47c 45deg 90deg,
+        #344c6d 90deg 135deg,
+        #9d344b 135deg 180deg,
+        #e5c47c 180deg 225deg,
+        #344c6d 225deg 270deg,
+        #9d344b 270deg 315deg,
+        #e5c47c 315deg 360deg
+      );
+      box-shadow: inset 0 0 0 1px #fff7, 0 3px 7px #0002;
+    }
+
+    .wheel::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 3px solid #b99a62;
+      border-radius: 50%;
+      background: #f7f0e3;
+    }
+
+    .pointer {
+      position: absolute;
+      z-index: 2;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 17px solid #b99a62;
+    }
+
+    .side-left, .side-right, .front {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .side-left {
+      z-index: 3;
+      background: linear-gradient(135deg, #e5d6bf, #c2ae8e);
+      clip-path: polygon(0 0, 50% 58%, 0 100%);
+    }
+
+    .side-right {
+      z-index: 3;
+      background: linear-gradient(225deg, #e4d5bd, #bba789);
+      clip-path: polygon(100% 0, 50% 58%, 100% 100%);
+    }
+
+    .front {
+      z-index: 4;
+      background: linear-gradient(145deg, #d8c6a9, #c3ae8e 55%, #b9a384);
+      clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .flap {
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 112px;
+      transform-origin: top center;
+      transform-style: preserve-3d;
+      transition: transform .75s ease, z-index 0s .38s;
+      background: linear-gradient(180deg, #e6d7c0, #cbb99a);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      backface-visibility: hidden;
+    }
+
+    /* После нажатия лист выходит поверх конверта */
+    .scene.open .paper-window {
+      overflow: visible;
+    }
+
+    .scene.open .paper {
+      transform: translateY(-145px);
+      transition-delay: .25s;
+    }
+
+    .scene.open .flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .paper, .flap { transition-duration: .01ms; }
+    }
+  </style>
+</head>
+
+<body>
+  <main
+    class="scene"
+    id="scene"
+    role="button"
+    tabindex="0"
+    aria-label="Открыть конверт"
+    aria-expanded="false"
+  >
+    <div class="envelope">
+      <div class="back"></div>
+
+      <div class="paper-window">
+        <div class="paper">
+          <h1>СКОРО</h1>
+          <div class="wheel">
+            <span class="pointer"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-left"></div>
+      <div class="side-right"></div>
+      <div class="front"></div>
+      <div class="flap"></div>
+    </div>
+  </main>
+
+  <script>
+    const scene = document.getElementById("scene");
+
+    function toggleEnvelope() {
+      const isOpen = scene.classList.toggle("open");
+      scene.setAttribute("aria-expanded", String(isOpen));
+      scene.setAttribute(
+        "aria-label",
+        isOpen ? "Закрыть конверт" : "Открыть конверт"
+      );
+    }
+
+    scene.addEventListener("click", toggleEnvelope);
+
+    scene.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleEnvelope();
+      }
+    });
+  </script>
+</body>
+</html>
