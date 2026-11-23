@@ -7,6 +7,14 @@
   <title>Секретное письмо</title>
 
   <style>
+    :root {
+      --paper: #f7f1df;
+      --cream: #dfcda9;
+      --cream-dark: #bda47e;
+      --ink: #26384f;
+      --gold: #a98a50;
+    }
+
     * { box-sizing: border-box; }
 
     html, body {
@@ -20,23 +28,24 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      background: radial-gradient(
-        ellipse at center,
-        #102541 0%,
-        #09182d 48%,
-        #050e1d 100%
-      );
+      background:
+        radial-gradient(circle at 50% 42%, rgba(72, 103, 139, .16), transparent 24%),
+        radial-gradient(ellipse at center, #102541 0%, #09182d 48%, #050e1d 100%);
       -webkit-tap-highlight-color: transparent;
     }
 
     .scene {
       position: relative;
-      width: min(340px, 88vw);
-      height: 350px;
+      width: min(360px, 88vw);
+      height: 390px;
       cursor: pointer;
-      perspective: 1000px;
+      perspective: 1200px;
       user-select: none;
       outline: none;
+    }
+
+    .scene:focus-visible .envelope {
+      filter: drop-shadow(0 25px 25px #0009) drop-shadow(0 0 8px #d6bd86);
     }
 
     .envelope {
@@ -44,97 +53,130 @@
       left: 0;
       bottom: 35px;
       width: 100%;
-      height: 200px;
+      height: 210px;
       isolation: isolate;
-      filter: drop-shadow(0 22px 28px #0008);
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 24px 22px rgba(0, 0, 0, .58));
+      transition: transform .35s ease, filter .35s ease;
+    }
+
+    .scene:not(.open):hover .envelope {
+      transform: translateY(-5px) rotateX(1deg);
     }
 
     .back {
       position: absolute;
       inset: 0;
       z-index: 1;
-      border-radius: 3px;
-      background: linear-gradient(145deg, #e1d2b9, #c7b394 58%, #b6a183);
+      border: 1px solid rgba(91, 69, 43, .25);
+      border-radius: 4px;
+      background:
+        linear-gradient(100deg, transparent 0 47%, rgba(255,255,255,.14) 49%, transparent 51%),
+        linear-gradient(145deg, #eadbbf, #cdb891 58%, #b69d76);
+      box-shadow: inset 0 1px 1px #fff8, inset 0 -7px 16px rgba(95, 69, 38, .12);
     }
 
-    /* Лист полностью скрыт внутри конверта до нажатия */
     .paper-window {
       position: absolute;
-      inset: 0;
+      left: 7%;
+      right: 7%;
+      bottom: 0;
+      height: 210px;
       z-index: 2;
       overflow: hidden;
-      border-radius: 3px;
+      border-radius: 2px 2px 4px 4px;
     }
 
     .paper {
       position: absolute;
-      left: 7%;
+      left: 0;
       bottom: 0;
-      width: 86%;
-      height: 245px;
-      padding-top: 19px;
+      width: 100%;
+      height: 285px;
+      padding: 22px 18px 18px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 17px;
-      color: #243750;
-      background: linear-gradient(110deg, #fbf8ef, #eee8dc 70%, #e5dece);
-      border: 1px solid #d8cfbf;
-      box-shadow: 0 2px 12px #0002;
+      gap: 14px;
+      color: var(--ink);
+      background:
+        repeating-linear-gradient(0deg, rgba(90, 70, 45, .035) 0 1px, transparent 1px 5px),
+        linear-gradient(105deg, #fbf7ea, var(--paper) 65%, #e5dcc6);
+      border: 1px solid #d1c6ae;
+      box-shadow: 0 4px 13px rgba(48, 37, 23, .22);
       transform: translateY(0);
-      transition: transform 1s cubic-bezier(.2, .75, .2, 1);
+      transition: transform 1.05s cubic-bezier(.22, .72, .19, 1);
+    }
+
+    .paper::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(169, 138, 80, .25);
+      pointer-events: none;
     }
 
     .paper h1 {
       margin: 0;
-      font: 600 27px Georgia, serif;
-      letter-spacing: 5px;
+      position: relative;
+      z-index: 1;
+      font: 600 30px Georgia, serif;
+      letter-spacing: 7px;
+      text-shadow: 0 1px #fff;
     }
 
     .wheel {
       position: relative;
-      width: 116px;
-      height: 116px;
+      z-index: 1;
+      width: 132px;
+      height: 132px;
       flex: 0 0 auto;
-      border: 5px solid #b99a62;
+      border: 6px solid #ad9057;
       border-radius: 50%;
-      background: conic-gradient(
-        #9d344b 0deg 45deg,
-        #e5c47c 45deg 90deg,
-        #344c6d 90deg 135deg,
-        #9d344b 135deg 180deg,
-        #e5c47c 180deg 225deg,
-        #344c6d 225deg 270deg,
-        #9d344b 270deg 315deg,
-        #e5c47c 315deg 360deg
-      );
-      box-shadow: inset 0 0 0 1px #fff7, 0 3px 7px #0002;
+      background:
+        radial-gradient(circle, transparent 0 53%, rgba(255,255,255,.12) 54% 55%, transparent 56%),
+        conic-gradient(
+          #9d344b 0deg 45deg,
+          #e5c47c 45deg 90deg,
+          #344c6d 90deg 135deg,
+          #9d344b 135deg 180deg,
+          #e5c47c 180deg 225deg,
+          #344c6d 225deg 270deg,
+          #9d344b 270deg 315deg,
+          #e5c47c 315deg 360deg
+        );
+      box-shadow:
+        inset 0 0 0 2px #f1dfae,
+        inset 0 0 13px rgba(40, 28, 14, .35),
+        0 5px 9px rgba(0, 0, 0, .2);
     }
 
     .wheel::after {
       content: "";
       position: absolute;
-      width: 22px;
-      height: 22px;
+      width: 26px;
+      height: 26px;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      border: 3px solid #b99a62;
+      border: 4px solid #ad9057;
       border-radius: 50%;
-      background: #f7f0e3;
+      background: radial-gradient(circle at 35% 30%, #fffaf0, #dcd1b7 55%, #b8a98a);
+      box-shadow: 0 2px 5px rgba(0,0,0,.25);
     }
 
     .pointer {
       position: absolute;
-      z-index: 2;
-      top: -8px;
+      z-index: 3;
+      top: -10px;
       left: 50%;
       transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 9px solid transparent;
-      border-right: 9px solid transparent;
-      border-top: 17px solid #b99a62;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 18px solid #a98a50;
+      filter: drop-shadow(0 2px 1px rgba(0,0,0,.25));
     }
 
     .side-left, .side-right, .front {
@@ -145,20 +187,41 @@
 
     .side-left {
       z-index: 3;
-      background: linear-gradient(135deg, #e5d6bf, #c2ae8e);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.28), transparent 35%),
+        linear-gradient(135deg, #eadcbf, #bea780);
       clip-path: polygon(0 0, 50% 58%, 0 100%);
+      filter: drop-shadow(1px 0 1px rgba(91,69,43,.12));
     }
 
     .side-right {
       z-index: 3;
-      background: linear-gradient(225deg, #e4d5bd, #bba789);
+      background:
+        linear-gradient(225deg, rgba(255,255,255,.22), transparent 35%),
+        linear-gradient(225deg, #dfcbaa, #b59d78);
       clip-path: polygon(100% 0, 50% 58%, 100% 100%);
+      filter: drop-shadow(-1px 0 1px rgba(91,69,43,.12));
     }
 
     .front {
       z-index: 4;
-      background: linear-gradient(145deg, #d8c6a9, #c3ae8e 55%, #b9a384);
+      background:
+        linear-gradient(25deg, transparent 49.6%, rgba(92,72,44,.10) 50%, transparent 50.4%),
+        linear-gradient(155deg, transparent 49.6%, rgba(92,72,44,.10) 50%, transparent 50.4%),
+        linear-gradient(145deg, #e3d1ad 0%, #cdb58c 58%, #baa27e 100%);
       clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+      box-shadow: inset 0 -10px 18px rgba(91,69,43,.10);
+    }
+
+    .front::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 16%;
+      background: linear-gradient(180deg, transparent, rgba(91,69,43,.09));
+      clip-path: polygon(0 0, 50% 38%, 100% 0, 100% 100%, 0 100%);
     }
 
     .flap {
@@ -167,23 +230,56 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 112px;
+      height: 122px;
       transform-origin: top center;
       transform-style: preserve-3d;
-      transition: transform .75s ease, z-index 0s .38s;
-      background: linear-gradient(180deg, #e6d7c0, #cbb99a);
+      transition: transform .75s cubic-bezier(.45, .05, .25, 1), z-index 0s .38s;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.22), transparent 38%),
+        linear-gradient(180deg, #eadbbd, #cbb78f);
       clip-path: polygon(0 0, 100% 0, 50% 100%);
       backface-visibility: hidden;
+      filter: drop-shadow(0 4px 2px rgba(71,52,30,.12));
     }
 
-    /* После нажатия лист выходит поверх конверта */
-    .scene.open .paper-window {
-      overflow: visible;
+    .seal {
+      position: absolute;
+      z-index: 6;
+      left: 50%;
+      top: 106px;
+      width: 52px;
+      height: 52px;
+      transform: translate(-50%, -50%);
+      border: 2px solid #721f30;
+      border-radius: 48% 52% 47% 53%;
+      background:
+        radial-gradient(circle at 38% 32%, #d05d67 0 8%, transparent 9%),
+        radial-gradient(circle at 52% 55%, #92263a 0 34%, #77182a 68%, #5d1120 100%);
+      box-shadow:
+        inset 3px 3px 5px rgba(255, 160, 160, .28),
+        inset -4px -5px 7px rgba(40, 0, 10, .35),
+        0 5px 8px rgba(0,0,0,.35);
+      transition: opacity .25s ease, transform .35s ease;
     }
+
+    .seal::before {
+      content: "S";
+      position: absolute;
+      inset: 8px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(245, 164, 164, .55);
+      border-radius: 50%;
+      color: #e5a0a2;
+      font: italic 700 22px Georgia, serif;
+      text-shadow: 0 1px #57101d;
+    }
+
+    .scene.open .paper-window { overflow: visible; }
 
     .scene.open .paper {
-      transform: translateY(-145px);
-      transition-delay: .25s;
+      transform: translateY(-155px);
+      transition-delay: .27s;
     }
 
     .scene.open .flap {
@@ -191,8 +287,13 @@
       z-index: 1;
     }
 
+    .scene.open .seal {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.72) rotate(12deg);
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      .paper, .flap { transition-duration: .01ms; }
+      .paper, .flap, .seal, .envelope { transition-duration: .01ms; }
     }
   </style>
 </head>
@@ -212,7 +313,7 @@
       <div class="paper-window">
         <div class="paper">
           <h1>СКОРО</h1>
-          <div class="wheel">
+          <div class="wheel" aria-label="Колесо">
             <span class="pointer"></span>
           </div>
         </div>
@@ -222,6 +323,7 @@
       <div class="side-right"></div>
       <div class="front"></div>
       <div class="flap"></div>
+      <div class="seal" aria-hidden="true"></div>
     </div>
   </main>
 
